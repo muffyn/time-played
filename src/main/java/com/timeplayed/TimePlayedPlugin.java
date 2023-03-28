@@ -1,4 +1,4 @@
-package com.example;
+package com.timeplayed;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -11,43 +11,45 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Example"
+	name = "Time Played",
+	description = "Displays time played",
+	enabledByDefault = false,
+	tags = {"time played, playtime, play, time, timer, ingame, in game"}
 )
-public class ExamplePlugin extends Plugin
+
+public class TimePlayedPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private ExampleConfig config;
+	private OverlayManager overlayManager;
+
+	@Inject
+	private TimePlayedOverlay myOverlay;
+
+	@Inject
+	private TimePlayedConfig config;
 
 	@Override
 	protected void startUp() throws Exception
 	{
-		log.info("Example started!");
+		overlayManager.add(myOverlay);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		log.info("Example stopped!");
-	}
-
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
-	{
-		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
-		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + config.greeting(), null);
-		}
+		overlayManager.remove(myOverlay);
 	}
 
 	@Provides
-	ExampleConfig provideConfig(ConfigManager configManager)
+	TimePlayedConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(ExampleConfig.class);
+		return configManager.getConfig(TimePlayedConfig.class);
 	}
 }
