@@ -43,25 +43,24 @@ public class TimePlayedPlugin extends Plugin
 	@Inject
 	private TimePlayedConfig config;
 
+	@Inject
+	private ConfigManager configManager;
+
 	private boolean paused = true;
 
-	/*
-	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-	ScheduledFuture future = null;
-	*/
+
 	@Override
 	protected void startUp() throws Exception {
 		overlayManager.add(myOverlay);
+		myOverlay.seconds = getStoredSeconds();
+		myOverlay.minutes = getStoredMinutes();
 	}
 
 	@Override
 	protected void shutDown() throws Exception {
+		setStoredSeconds(myOverlay.seconds);
+		setStoredMinutes(myOverlay.minutes);
 		overlayManager.remove(myOverlay);
-	}
-
-	@Subscribe
-	public void onRuneScapeProfileChanged(RuneScapeProfileChanged e) {
-		//load
 	}
 
 	@Subscribe
@@ -71,6 +70,9 @@ public class TimePlayedPlugin extends Plugin
 				event.getGameState() == GameState.CONNECTION_LOST) {
 			if (paused) {
 				paused = false;
+				myOverlay.seconds = getStoredSeconds();
+				myOverlay.minutes = getStoredMinutes();
+
 				// there is a 1.2 second penalty every time you hop
 				myOverlay.seconds += 12;
 				if (myOverlay.seconds >= 600) {
@@ -78,9 +80,18 @@ public class TimePlayedPlugin extends Plugin
 					myOverlay.seconds -= 600;
 				}
 
+				// after penalty, see if we were desynced
+				int timePlayed = client.getVarcIntValue(526);
+				if (timePlayed > myOverlay.minutes) {
+					myOverlay.minutes = timePlayed;
+					myOverlay.seconds = 0;
+				}
+
 			}
 		} else if (!paused) {
 			paused = true;
+			setStoredSeconds(myOverlay.seconds);
+			setStoredMinutes(myOverlay.minutes);
 		}
 	}
 
@@ -88,20 +99,12 @@ public class TimePlayedPlugin extends Plugin
 	public void onGameTick(GameTick event) {
 
 		myOverlay.seconds += 6;
-		//myOverlay.seconds = seconds;
 
 		if (myOverlay.seconds >= 600) {
 			myOverlay.minutes += 1;
 			myOverlay.seconds -= 600;
 		}
 
-		/*if (future != null) {
-			future.cancel(true);
-		}
-
-		future = executorService.scheduleAtFixedRate(() -> myOverlay.seconds++,
-				0, 100, TimeUnit.MILLISECONDS);
-		*/
 	}
 
 	@Subscribe
@@ -111,12 +114,47 @@ public class TimePlayedPlugin extends Plugin
 			myOverlay.minutes = timePlayed;
 			myOverlay.seconds = 0;
 		}
-
 	}
 
 	@Provides
 	TimePlayedConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(TimePlayedConfig.class);
+	}
+
+	private int getStoredSeconds()
+	{
+		try
+		{
+			return Integer.parseInt(configManager.getRSProfileConfiguration("timeplayed", "seconds"));
+		}
+		catch (NumberFormatException ignored)
+		{
+			return 0;
+		}
+	}
+
+	private void setStoredSeconds(int seconds)
+	{
+		configManager.setRSProfileConfiguration("timeplayed", "seconds", seconds);
+
+	}
+
+	private int getStoredMinutes()
+	{
+		try
+		{
+			return Integer.parseInt(configManager.getRSProfileConfiguration("timeplayed", "minutes"));
+		}
+		catch (NumberFormatException ignored)
+		{
+			return client.getVarcIntValue(526);
+		}
+	}
+
+	private void setStoredMinutes(int minutes)
+	{
+		configManager.setRSProfileConfiguration("timeplayed", "minutes", minutes);
+
 	}
 }

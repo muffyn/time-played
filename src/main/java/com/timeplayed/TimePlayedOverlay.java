@@ -34,7 +34,7 @@ public class TimePlayedOverlay extends Overlay {
         super(plugin);
         setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
         setLayer(OverlayLayer.ABOVE_SCENE);
-        this.plugin = plugin;  //set plugin field to plugin object given as input
+        this.plugin = plugin;
         this.config = config;
         this.client = client;
         this.tooltipManager = tooltipManager;
@@ -49,7 +49,7 @@ public class TimePlayedOverlay extends Overlay {
         String rightStr = buildRightString();
         Font font = new Font(config.font(), Font.PLAIN, config.fontSize());
         Color color = config.fontColor();
-        Color transparent = new Color(0, 0, 0, 0);
+        Color transparent = config.bgColor();
 
         panelComponent.getChildren().add(LineComponent.builder()
                      .right(leftStr + rightStr)

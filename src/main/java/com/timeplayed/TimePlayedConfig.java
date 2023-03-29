@@ -1,5 +1,6 @@
 package com.timeplayed;
 
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -37,11 +38,20 @@ public interface TimePlayedConfig extends Config
 	)
 	default int fontSize() { return 16; }
 
+	@Alpha
 	@ConfigItem(
 			keyName = "fontcolor",
 			name = "Font color",
 			description = "The color to display the timer with"
 	)
-	default Color fontColor() { return new Color(41,204,84); }
+	default Color fontColor() { return new Color(41,204,84, 1); }
+
+	@Alpha
+	@ConfigItem(
+			keyName = "bgcolor",
+			name = "Background color",
+			description = "The color of the background (transparent by default)"
+	)
+	default Color bgColor() { return new Color(0, 0, 0, 0); }
 
 }
