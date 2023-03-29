@@ -6,19 +6,23 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.*;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.RuneScapeProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import java.awt.*;
+import java.sql.Time;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -61,6 +65,12 @@ public class TimePlayedPlugin extends Plugin
 
 	@Override
 	protected void shutDown() throws Exception {
+		if (config.clearReportButton() || config.reportButton()) {
+			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+			if (reportButton != null) {
+				reportButton.setText("Report");
+			}
+		}
 		setStoredSeconds(myOverlay.seconds);
 		setStoredMinutes(myOverlay.minutes);
 		overlayManager.remove(myOverlay);
@@ -84,6 +94,17 @@ public class TimePlayedPlugin extends Plugin
 		if (event.getKey().equals("fontsize")) {
 			//myOverlay.changeSize();
 		}
+
+		if (event.getKey().equals("reportbutton") || event.getKey().equals("clearreportbutton")) {
+			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+			if (reportButton != null) {
+				if (config.reportButton() || config.clearReportButton()) {
+					reportButton.setText("");
+				} else {
+					reportButton.setText("Report");
+				}
+			}
+		}
 	}
 
 	@Subscribe
@@ -93,6 +114,7 @@ public class TimePlayedPlugin extends Plugin
 				event.getGameState() == GameState.CONNECTION_LOST) {
 			if (paused) {
 				paused = false;
+
 				myOverlay.seconds = getStoredSeconds();
 				myOverlay.minutes = getStoredMinutes();
 
@@ -126,13 +148,17 @@ public class TimePlayedPlugin extends Plugin
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
-
+		long time = java.time.Instant.now().toEpochMilli();
+		myOverlay.lastTick = time;
+		myOverlay.msOffset = 0;
 		myOverlay.seconds += 6;
 
 		if (myOverlay.seconds >= 600) {
 			myOverlay.minutes += 1;
 			myOverlay.seconds -= 600;
 		}
+
+
 
 	}
 
@@ -143,6 +169,22 @@ public class TimePlayedPlugin extends Plugin
 			myOverlay.minutes = timePlayed;
 			myOverlay.seconds = 0;
 		}
+	}
+
+	@Subscribe
+	public void onClientTick(ClientTick event) {
+		// clear report button
+		if (config.clearReportButton() || config.reportButton()) {
+			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+			if (reportButton != null && reportButton.getText().equals("Report")) {
+				reportButton.setText("");
+			}
+		}
+
+		// save current time for smooth timer
+		long time = java.time.Instant.now().toEpochMilli();
+		myOverlay.msOffset = (int)((time - myOverlay.lastTick) / 100);
+
 	}
 
 	@Provides

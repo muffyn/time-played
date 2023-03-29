@@ -1,6 +1,8 @@
 package com.timeplayed;
 
 import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -30,6 +32,8 @@ public class TimePlayedOverlay extends Overlay {
 
     public int minutes = 0;
     public int seconds = 0;
+    public long lastTick = 0;
+    public int msOffset = 0;
 
 
     @Inject
@@ -107,6 +111,13 @@ public class TimePlayedOverlay extends Overlay {
             panelComponent.setPreferredSize(new Dimension(adv + 8, hgt + 8));
 
         }
+
+        if (config.reportButton()) {
+            Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+            if (reportButton != null) {
+                reportButton.setText(str);
+            }
+        }
         //System.out.println(panelComponent.getChildren() + ";" + panelComponent.getBounds());
         return panelComponent.render(graphics);
     }
@@ -126,13 +137,22 @@ public class TimePlayedOverlay extends Overlay {
     }
 
     public String buildRightString() {
+        int effectiveSec;
+        if (config.smoothTimer()) {
+            if (msOffset >= 6) {
+                msOffset = 5;
+            }
+            effectiveSec = seconds + msOffset;
 
+        } else {
+            effectiveSec = seconds;
+        }
         if (config.displayMs()) {
-            int secs = seconds / 10;
-            int ms = seconds % 10;
+            int secs = effectiveSec / 10;
+            int ms = effectiveSec % 10;
             return String.format(":%02d.%01d", secs, ms);
         } else {
-            int secs = seconds / 10;
+            int secs = effectiveSec / 10;
             return String.format(":%02d", secs);
         }
 

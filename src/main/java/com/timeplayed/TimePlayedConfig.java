@@ -29,7 +29,7 @@ public interface TimePlayedConfig extends Config
 			description = "Check the box to use a smooth timer. This means it will interpolate and count up ms instead of just counting up ticks, and the seconds section will change every second rather than at a variable rate dependent on ticks.",
 			position = 2
 	)
-	default boolean smoothTimer() { return false; }
+	default boolean smoothTimer() { return true; }
 
 	@ConfigItem(
 			keyName = "ontop",
@@ -37,7 +37,7 @@ public interface TimePlayedConfig extends Config
 			description = "Check the box to show the timer above all other interfaces.",
 			position = 3
 	)
-	default boolean ontop() { return false; }
+	default boolean ontop() { return true; }
 
 	@ConfigItem(
 			keyName = "defstyle",
@@ -47,10 +47,26 @@ public interface TimePlayedConfig extends Config
 	)
 	default boolean defStyle() { return false; }
 
+	@ConfigItem(
+			keyName = "reportbutton",
+			name = "Show time on Report button?",
+			description = "Check the box to draw the timer on the report button.",
+			position = 5
+	)
+	default boolean reportButton() { return false; }
+
+	@ConfigItem(
+			keyName = "clearreportbutton",
+			name = "Clear text on Report button?",
+			description = "Check the box to clear the text from the Report button (to put the fancy timer on top).",
+			position = 6
+	)
+	default boolean clearReportButton() { return false; }
+
 	@ConfigSection(
 			name = "Customizations",
 			description = "Customize the appearance of the timer to look more like LiveSplit",
-			position = 5,
+			position = 7,
 			closedByDefault = false
 	)
 	String customizationsSection = "cust";
