@@ -47,20 +47,17 @@ public class TimePlayedOverlay extends Overlay {
         panelComponent.getChildren().clear();
         String leftStr = buildLeftString();
         String rightStr = buildRightString();
-        Font font = new Font("Century Gothic Bold",Font.PLAIN,36);
-        Color green = new Color(41,204,84);
-        Color transparent = new Color(0, 0, 0, 10);
+        Font font = new Font(config.font(), Font.PLAIN, config.fontSize());
+        Color color = config.fontColor();
+        Color transparent = new Color(0, 0, 0, 0);
 
-        panelComponent.setWrap(true);
         panelComponent.getChildren().add(LineComponent.builder()
                      .right(leftStr + rightStr)
                      .rightFont(font)
-                     .rightColor(green)
+                     .rightColor(color)
                      .build());
 
         panelComponent.setBackgroundColor(transparent);
-        panelComponent.setPreferredSize(new Dimension(500, 36));
-
 
         return panelComponent.render(graphics);
     }
@@ -76,7 +73,10 @@ public class TimePlayedOverlay extends Overlay {
     public String buildRightString() {
         int secs = seconds / 10;
         int ms = seconds % 10;
-        return String.format(":%02d.%01d", secs, ms);
+        if (config.displayMs()) {
+            return String.format(":%02d.%01d", secs, ms);
+        }
+        return String.format(":%02d", secs);
 
     }
 
