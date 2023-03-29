@@ -18,6 +18,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import java.awt.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -78,6 +79,10 @@ public class TimePlayedPlugin extends Plugin
 			} else {
 				myOverlay.setLayer(OverlayLayer.ABOVE_SCENE);
 			}
+		}
+
+		if (event.getKey().equals("fontsize")) {
+			//myOverlay.changeSize();
 		}
 	}
 
