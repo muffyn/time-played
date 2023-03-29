@@ -7,11 +7,18 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @PluginDescriptor(
@@ -35,6 +42,12 @@ public class TimePlayedPlugin extends Plugin
 	@Inject
 	private TimePlayedConfig config;
 
+	private boolean paused = true;
+
+	/*
+	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+	ScheduledFuture future = null;
+	*/
 	@Override
 	protected void startUp() throws Exception
 	{
@@ -45,6 +58,56 @@ public class TimePlayedPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(myOverlay);
+	}
+
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event) {
+		if (event.getGameState() == GameState.LOADING ||
+				event.getGameState() == GameState.LOGGED_IN ||
+				event.getGameState() == GameState.CONNECTION_LOST) {
+			if (paused) {
+				paused = false;
+				// there is a 1.2 second penalty every time you hop
+				myOverlay.seconds += 12;
+				if (myOverlay.seconds >= 600) {
+					myOverlay.minutes += 1;
+					myOverlay.seconds -= 600;
+				}
+
+			}
+		} else if (!paused) {
+			paused = true;
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event) {
+
+		myOverlay.seconds += 6;
+		//myOverlay.seconds = seconds;
+
+		if (myOverlay.seconds >= 600) {
+			myOverlay.minutes += 1;
+			myOverlay.seconds -= 600;
+		}
+
+		/*if (future != null) {
+			future.cancel(true);
+		}
+
+		future = executorService.scheduleAtFixedRate(() -> myOverlay.seconds++,
+				0, 100, TimeUnit.MILLISECONDS);
+		*/
+	}
+
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged event) {
+		int timePlayed = client.getVarcIntValue(526);
+		if (timePlayed > myOverlay.minutes) {
+			myOverlay.minutes = timePlayed;
+			myOverlay.seconds = 0;
+		}
+
 	}
 
 	@Provides

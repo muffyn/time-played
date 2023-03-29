@@ -25,6 +25,9 @@ public class TimePlayedOverlay extends Overlay {
 
     private PanelComponent panelComponent = new PanelComponent();
 
+    public int minutes = 0;
+    public int seconds = 0;
+
 
     @Inject
     public TimePlayedOverlay(TimePlayedPlugin plugin, TimePlayedConfig config, Client client, TooltipManager tooltipManager) {
@@ -42,22 +45,39 @@ public class TimePlayedOverlay extends Overlay {
     @Override
     public Dimension render(Graphics2D graphics) {
         panelComponent.getChildren().clear();
-        String timeStr = buildTimeString();
+        String leftStr = buildLeftString();
+        String rightStr = buildRightString();
+        Font font = new Font("Century Gothic Bold",Font.PLAIN,36);
+        Color green = new Color(41,204,84);
+        Color transparent = new Color(0, 0, 0, 10);
 
+        panelComponent.setWrap(true);
         panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Played:")
-                    .right(timeStr)
-                    .build());
+                     .right(leftStr + rightStr)
+                     .rightFont(font)
+                     .rightColor(green)
+                     .build());
+
+        panelComponent.setBackgroundColor(transparent);
+        panelComponent.setPreferredSize(new Dimension(500, 36));
+
 
         return panelComponent.render(graphics);
     }
 
-    public String buildTimeString() {
-        int timePlayed = client.getVarcIntValue(526);
-        int days = timePlayed / 1440;
-        int hours = (timePlayed % 1440) / 60;
-        int minutes = timePlayed % 60;
-        return Integer.toString(days) + "d" +  Integer.toString(hours) + "h" + Integer.toString(minutes) + "m";
+    public String buildLeftString() {
+        //int days = time / 1440;
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return String.format("%d:%02d", hrs, mins);
 
     }
+
+    public String buildRightString() {
+        int secs = seconds / 10;
+        int ms = seconds % 10;
+        return String.format(":%02d.%01d", secs, ms);
+
+    }
+
 }
