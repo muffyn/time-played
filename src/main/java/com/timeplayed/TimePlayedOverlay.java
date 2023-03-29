@@ -5,6 +5,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.components.ComponentConstants;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 
@@ -33,11 +34,17 @@ public class TimePlayedOverlay extends Overlay {
     public TimePlayedOverlay(TimePlayedPlugin plugin, TimePlayedConfig config, Client client, TooltipManager tooltipManager) {
         super(plugin);
         setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
-        setLayer(OverlayLayer.ABOVE_SCENE);
+        if (config.ontop()) {
+            setLayer(OverlayLayer.ABOVE_WIDGETS);
+        } else {
+            setLayer(OverlayLayer.ABOVE_SCENE);
+        }
+        //setResizable(true);
         this.plugin = plugin;
         this.config = config;
         this.client = client;
         this.tooltipManager = tooltipManager;
+
         getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Time played overlay"));
     }
 
@@ -47,17 +54,28 @@ public class TimePlayedOverlay extends Overlay {
         panelComponent.getChildren().clear();
         String leftStr = buildLeftString();
         String rightStr = buildRightString();
-        Font font = new Font(config.font(), Font.PLAIN, config.fontSize());
-        Color color = config.fontColor();
-        Color transparent = config.bgColor();
 
-        panelComponent.getChildren().add(LineComponent.builder()
-                     .right(leftStr + rightStr)
-                     .rightFont(font)
-                     .rightColor(color)
-                     .build());
+        if (config.defStyle()) {
 
-        panelComponent.setBackgroundColor(transparent);
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .right(leftStr + rightStr)
+                    .build());
+            Color bgcolor = ComponentConstants.STANDARD_BACKGROUND_COLOR;
+            panelComponent.setBackgroundColor(bgcolor);
+
+        } else {
+            Font font = new Font(config.font(), Font.PLAIN, config.fontSize());
+            Color color = config.fontColor();
+            Color bgcolor = config.bgColor();
+
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .right(leftStr + rightStr)
+                    .rightFont(font)
+                    .rightColor(color)
+                    .build());
+
+            panelComponent.setBackgroundColor(bgcolor);
+        }
 
         return panelComponent.render(graphics);
     }

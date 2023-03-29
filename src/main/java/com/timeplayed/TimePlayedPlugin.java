@@ -11,9 +11,11 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.RuneScapeProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import java.util.concurrent.Executors;
@@ -64,6 +66,22 @@ public class TimePlayedPlugin extends Plugin
 	}
 
 	@Subscribe
+	private void onConfigChanged(ConfigChanged event) {
+		if (!event.getGroup().equals("timeplayed"))
+		{
+			return;
+		}
+
+		if (event.getKey().equals("ontop")) {
+			if (config.ontop()) {
+				myOverlay.setLayer(OverlayLayer.ABOVE_WIDGETS);
+			} else {
+				myOverlay.setLayer(OverlayLayer.ABOVE_SCENE);
+			}
+		}
+	}
+
+	@Subscribe
 	private void onGameStateChanged(GameStateChanged event) {
 		if (event.getGameState() == GameState.LOADING ||
 				event.getGameState() == GameState.LOGGED_IN ||
@@ -93,6 +111,12 @@ public class TimePlayedPlugin extends Plugin
 			setStoredSeconds(myOverlay.seconds);
 			setStoredMinutes(myOverlay.minutes);
 		}
+	}
+
+	@Subscribe
+	public void onRuneScapeProfileChanged(RuneScapeProfileChanged event) {
+		myOverlay.seconds = getStoredSeconds();
+		myOverlay.minutes = getStoredMinutes();
 	}
 
 	@Subscribe
