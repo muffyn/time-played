@@ -17,7 +17,6 @@ import java.awt.*;
 import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 
 
-import static net.runelite.api.MenuAction.PLAYER_EIGHTH_OPTION;
 import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 
@@ -45,29 +44,16 @@ public class TimePlayedOverlay extends Overlay {
         } else {
             setLayer(OverlayLayer.ABOVE_SCENE);
         }
-        //setResizable(true);
+
         this.plugin = plugin;
         this.config = config;
         this.client = client;
         this.tooltipManager = tooltipManager;
-        //panelComponent.setWrap();
+
         setMinimumSize(10);
         panelComponent.setBorder(new Rectangle(4, 4));
-        //changeSize();
 
         getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Time played overlay"));
-    }
-
-    public void changeSize() {
-        int chars = (buildLeftString() + buildRightString()).length();
-        int fontSize;
-        if (config.defStyle()) {
-            fontSize = 14;
-        } else {
-            fontSize = config.fontSize();
-        }
-
-        panelComponent.setPreferredSize(new Dimension((int) ((fontSize / 10.0) * chars * 5.75), 1));
     }
 
     //render method
@@ -75,9 +61,18 @@ public class TimePlayedOverlay extends Overlay {
     public Dimension render(Graphics2D graphics) {
         panelComponent.getChildren().clear();
 
+
         String leftStr = buildLeftString();
         String rightStr = buildRightString();
         String str = leftStr + rightStr;
+
+        if (config.showOnReportButton()) {
+            Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+            if (reportButton != null) {
+                reportButton.setText(str);
+            }
+            return null;
+        }
 
         if (config.defStyle()) {
             FontMetrics metrics = graphics.getFontMetrics(FontManager.getRunescapeFont());
@@ -112,13 +107,6 @@ public class TimePlayedOverlay extends Overlay {
 
         }
 
-        if (config.reportButton()) {
-            Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
-            if (reportButton != null) {
-                reportButton.setText(str);
-            }
-        }
-        //System.out.println(panelComponent.getChildren() + ";" + panelComponent.getBounds());
         return panelComponent.render(graphics);
     }
 
@@ -127,7 +115,7 @@ public class TimePlayedOverlay extends Overlay {
             int days = minutes / 1440;
             int hrs = (minutes % 1440) / 60;
             int mins = minutes % 60;
-            return String.format("%01dd%d:%02d", days, hrs, mins);
+            return String.format("%01dd%02d:%02d", days, hrs, mins);
         } else {
             int hrs = minutes / 60;
             int mins = minutes % 60;

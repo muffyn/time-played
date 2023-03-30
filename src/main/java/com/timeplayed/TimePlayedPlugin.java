@@ -3,7 +3,6 @@ package com.timeplayed;
 import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.*;
@@ -15,18 +14,8 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.RuneScapeProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
-
-import java.awt.*;
-import java.sql.Time;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @PluginDescriptor(
@@ -65,7 +54,7 @@ public class TimePlayedPlugin extends Plugin
 
 	@Override
 	protected void shutDown() throws Exception {
-		if (config.clearReportButton() || config.reportButton()) {
+		if (config.clearReportButton() || config.showOnReportButton()) {
 			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
 			if (reportButton != null) {
 				reportButton.setText("Report");
@@ -91,14 +80,10 @@ public class TimePlayedPlugin extends Plugin
 			}
 		}
 
-		if (event.getKey().equals("fontsize")) {
-			//myOverlay.changeSize();
-		}
-
-		if (event.getKey().equals("reportbutton") || event.getKey().equals("clearreportbutton")) {
+		if (event.getKey().equals("showonreportbutton") || event.getKey().equals("clearreportbutton")) {
 			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
 			if (reportButton != null) {
-				if (config.reportButton() || config.clearReportButton()) {
+				if (config.showOnReportButton() || config.clearReportButton()) {
 					reportButton.setText("");
 				} else {
 					reportButton.setText("Report");
@@ -174,7 +159,7 @@ public class TimePlayedPlugin extends Plugin
 	@Subscribe
 	public void onClientTick(ClientTick event) {
 		// clear report button
-		if (config.clearReportButton() || config.reportButton()) {
+		if (config.clearReportButton() || config.showOnReportButton()) {
 			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
 			if (reportButton != null && reportButton.getText().equals("Report")) {
 				reportButton.setText("");

@@ -40,20 +40,12 @@ public interface TimePlayedConfig extends Config
 	default boolean ontop() { return true; }
 
 	@ConfigItem(
-			keyName = "defstyle",
-			name = "Use default RuneLite styling?",
-			description = "Check the box to ignore all customizations below.",
-			position = 4
-	)
-	default boolean defStyle() { return false; }
-
-	@ConfigItem(
-			keyName = "reportbutton",
+			keyName = "showonreportbutton",
 			name = "Show time on Report button?",
-			description = "Check the box to draw the timer on the report button.",
+			description = "Check the box to draw the timer on the report button. Hides the default timer.",
 			position = 5
 	)
-	default boolean reportButton() { return false; }
+	default boolean showOnReportButton() { return false; }
 
 	@ConfigItem(
 			keyName = "clearreportbutton",
@@ -62,6 +54,14 @@ public interface TimePlayedConfig extends Config
 			position = 6
 	)
 	default boolean clearReportButton() { return false; }
+
+	@ConfigItem(
+			keyName = "defstyle",
+			name = "Use default RuneLite styling?",
+			description = "Check the box to ignore all customizations below.",
+			position = 4
+	)
+	default boolean defStyle() { return false; }
 
 	@ConfigSection(
 			name = "Customizations",
@@ -88,7 +88,7 @@ public interface TimePlayedConfig extends Config
 			section = "cust",
 			position = 2
 	)
-	default Color fontColor() { return new Color(41,204,84, 1); }
+	default Color fontColor() { return new Color(41,204,84, 255); }
 
 	@ConfigItem(
 			keyName = "font",
