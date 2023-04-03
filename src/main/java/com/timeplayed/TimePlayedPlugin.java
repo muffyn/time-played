@@ -102,6 +102,9 @@ public class TimePlayedPlugin extends Plugin
 
 				myOverlay.seconds = getStoredSeconds();
 				myOverlay.minutes = getStoredMinutes();
+				if (myOverlay.minutes == 0) {
+					myOverlay.minutes = client.getVarcIntValue(526);
+				}
 
 				// there is a 1.2 second penalty every time you hop
 				myOverlay.seconds += 12;
@@ -133,8 +136,10 @@ public class TimePlayedPlugin extends Plugin
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
-		long time = java.time.Instant.now().toEpochMilli();
-		myOverlay.lastTick = time;
+		if (myOverlay == null) {
+			return;
+		}
+		myOverlay.lastTick = java.time.Instant.now().toEpochMilli();
 		myOverlay.msOffset = 0;
 		myOverlay.seconds += 6;
 
@@ -158,6 +163,9 @@ public class TimePlayedPlugin extends Plugin
 
 	@Subscribe
 	public void onClientTick(ClientTick event) {
+		if (paused) {
+			return;
+		}
 		// clear report button
 		if (config.clearReportButton() || config.showOnReportButton()) {
 			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
@@ -167,8 +175,10 @@ public class TimePlayedPlugin extends Plugin
 		}
 
 		// save current time for smooth timer
-		long time = java.time.Instant.now().toEpochMilli();
-		myOverlay.msOffset = (int)((time - myOverlay.lastTick) / 100);
+		if (myOverlay != null) {
+			long time = java.time.Instant.now().toEpochMilli();
+			myOverlay.msOffset = (int) ((time - myOverlay.lastTick) / 100);
+		}
 
 	}
 
@@ -204,7 +214,8 @@ public class TimePlayedPlugin extends Plugin
 		}
 		catch (NumberFormatException ignored)
 		{
-			return client.getVarcIntValue(526);
+			paused = true;
+			return 0;
 		}
 	}
 
