@@ -21,7 +21,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 @PluginDescriptor(
 	name = "Time Played",
 	description = "Displays time played",
-	enabledByDefault = false,
+	enabledByDefault = true,
 	tags = {"time played, playtime, play, time, timer, ingame, in game"}
 )
 
