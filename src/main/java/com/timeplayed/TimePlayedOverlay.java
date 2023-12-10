@@ -111,14 +111,19 @@ public class TimePlayedOverlay extends Overlay {
     }
 
     public String buildLeftString() {
+        int offsetMinutes = minutes;
+        if (config.useOffset() && (offsetMinutes - config.offset()) >= 0) {
+            offsetMinutes -= config.offset();
+        }
+
         if (config.displayDays()) {
-            int days = minutes / 1440;
-            int hrs = (minutes % 1440) / 60;
-            int mins = minutes % 60;
+            int days = offsetMinutes / 1440;
+            int hrs = (offsetMinutes % 1440) / 60;
+            int mins = offsetMinutes % 60;
             return String.format("%01dd%02d:%02d", days, hrs, mins);
         } else {
-            int hrs = minutes / 60;
-            int mins = minutes % 60;
+            int hrs = offsetMinutes / 60;
+            int mins = offsetMinutes % 60;
             return String.format("%d:%02d", hrs, mins);
         }
 

@@ -64,9 +64,35 @@ public interface TimePlayedConfig extends Config
 	default boolean defStyle() { return false; }
 
 	@ConfigSection(
+			name = "Timer Offset",
+			description = "Subtract time from the display on the timer. Useful to reset the time from zero for challenges.",
+			position = 7,
+			closedByDefault = false
+	)
+	String offsetSection = "offs";
+	@ConfigItem(
+			keyName = "useoffset",
+			name = "Use offset?",
+			description = "Check the box to subtract the offset from the displayed time.",
+			section = "offs",
+			position = 1
+	)
+	default boolean useOffset() { return false; }
+	@ConfigItem(
+			keyName = "offset",
+			name = "Offset (minutes)",
+			description = "The amount of minutes to subtract from the timer.\n" +
+					"Calculate this number by doing (hours * 60) + minutes.\n" +
+					"If the number entered is too high, no offset will be used.",
+			section = "offs",
+			position = 2
+	)
+	default int offset() { return 0; }
+
+	@ConfigSection(
 			name = "Customizations",
 			description = "Customize the appearance of the timer to look more like LiveSplit",
-			position = 7,
+			position = 8,
 			closedByDefault = false
 	)
 	String customizationsSection = "cust";
