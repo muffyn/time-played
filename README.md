@@ -20,4 +20,4 @@ The timer tries its best to stay accurate with game ticks rather than real time.
 Disable the "Report Button" plugin on RuneLite. It conflicts and tries to take control of the report button every 500ms.
 
 ---
-Feel free to add suggestions or pull requests. Contact `Muffyn#0971` on Discord for more info or to talk about anything speedrunning related :)
+Feel free to add suggestions or pull requests. Contact `muffyn` on Discord for more info or to talk about anything speedrunning related :)
