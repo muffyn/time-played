@@ -147,9 +147,6 @@ public class TimePlayedPlugin extends Plugin
 			myOverlay.minutes += 1;
 			myOverlay.seconds -= 600;
 		}
-
-
-
 	}
 
 	@Subscribe
@@ -163,6 +160,12 @@ public class TimePlayedPlugin extends Plugin
 
 	@Subscribe
 	public void onClientTick(ClientTick event) {
+		// save current time for smooth timer
+		if (myOverlay != null) {
+			long time = java.time.Instant.now().toEpochMilli();
+			myOverlay.msOffset = (int) ((time - myOverlay.lastTick) / 100);
+		}
+
 		if (paused) {
 			return;
 		}
@@ -174,11 +177,7 @@ public class TimePlayedPlugin extends Plugin
 			}
 		}
 
-		// save current time for smooth timer
-		if (myOverlay != null) {
-			long time = java.time.Instant.now().toEpochMilli();
-			myOverlay.msOffset = (int) ((time - myOverlay.lastTick) / 100);
-		}
+
 
 	}
 
