@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -55,7 +55,7 @@ public class TimePlayedPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception {
 		if (config.clearReportButton() || config.showOnReportButton()) {
-			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+			Widget reportButton = client.getWidget(ComponentID.CHATBOX_REPORT_TEXT);
 			if (reportButton != null) {
 				reportButton.setText("Report");
 			}
@@ -81,7 +81,7 @@ public class TimePlayedPlugin extends Plugin
 		}
 
 		if (event.getKey().equals("showonreportbutton") || event.getKey().equals("clearreportbutton")) {
-			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+			Widget reportButton = client.getWidget(ComponentID.CHATBOX_REPORT_TEXT);
 			if (reportButton != null) {
 				if (config.showOnReportButton() || config.clearReportButton()) {
 					reportButton.setText("");
@@ -171,7 +171,7 @@ public class TimePlayedPlugin extends Plugin
 		}
 		// clear report button
 		if (config.clearReportButton() || config.showOnReportButton()) {
-			Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+			Widget reportButton = client.getWidget(ComponentID.CHATBOX_REPORT_TEXT);
 			if (reportButton != null && reportButton.getText().equals("Report")) {
 				reportButton.setText("");
 			}

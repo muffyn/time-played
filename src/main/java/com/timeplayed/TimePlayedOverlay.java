@@ -1,8 +1,8 @@
 package com.timeplayed;
 
 import net.runelite.api.Client;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -67,7 +67,7 @@ public class TimePlayedOverlay extends Overlay {
         String str = leftStr + rightStr;
 
         if (config.showOnReportButton()) {
-            Widget reportButton = client.getWidget(WidgetInfo.CHATBOX_REPORT_TEXT);
+            Widget reportButton = client.getWidget(ComponentID.CHATBOX_REPORT_TEXT);
             if (reportButton != null) {
                 reportButton.setText(str);
             }
