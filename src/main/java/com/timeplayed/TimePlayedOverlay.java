@@ -140,6 +140,9 @@ public class TimePlayedOverlay extends Overlay {
         } else {
             effectiveSec = seconds;
         }
+        if(config.displaySeconds() == false) {
+            return "";
+        }
         if (config.displayMs()) {
             int secs = effectiveSec / 10;
             int ms = effectiveSec % 10;

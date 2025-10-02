@@ -8,6 +8,14 @@ import java.awt.*;
 public interface TimePlayedConfig extends Config
 {
 	@ConfigItem(
+			keyName = "displays",
+			name = "Display seconds?",
+			description = "Check the box to display seconds.",
+			position = 1
+	)
+	default boolean displaySeconds() { return true; }
+
+	@ConfigItem(
 			keyName = "displayms",
 			name = "Display ms?",
 			description = "Check the box to display ms.",
